@@ -17,6 +17,19 @@ def color_thresh(img, rgb_thresh=(160, 160, 160)):
     # Return the binary image
     return color_select
 
+# Threshold for rock: R > thresh_R & G > thresh_G & B < thresh_B
+def rock_thresh(img, rgb_thresh=(140, 110, 100)):
+    # Create an array of zeros same xy size as img, but single channel
+    color_select = np.zeros_like(img[:,:,0])
+
+    match_thresh = (img[:,:,0] > rgb_thresh[0]) \
+                & (img[:,:,1] > rgb_thresh[1]) \
+                & (img[:,:,2] < rgb_thresh[2])
+    # Index the array of zeros with the boolean array and set to 1
+    color_select[match_thresh] = 1
+    # Return the binary image
+    return color_select
+
 # Define a function to convert from image coords to rover coords
 def rover_coords(binary_img):
     # Identify nonzero pixels
@@ -102,8 +115,33 @@ def perception_step(Rover):
     # Update Rover pixel distances and angles
         # Rover.nav_dists = rover_centric_pixel_distances
         # Rover.nav_angles = rover_centric_angles
+    dst_size = 5
+    bottom_offset = 6
+    img = Rover.img
+
+    src = np.float32([[14, 140], [301 ,140],[200, 96], [118, 96]])
+    dst = np.float32([[img.shape[1]/2 - dst_size, img.shape[0] - bottom_offset],
+                      [img.shape[1]/2 + dst_size, img.shape[0] - bottom_offset],
+                      [img.shape[1]/2 + dst_size, img.shape[0] - 2*dst_size - bottom_offset], 
+                      [img.shape[1]/2 - dst_size, img.shape[0] - 2*dst_size - bottom_offset],
+                      ])
     
- 
-    
+    warped = perspect_transform(img, src, dst)
+
+    rock_img = rock_thresh(warped)
+    nav_img = color_thresh(warped)
+
+    # Thresh of rock sample
+    Rover.vision_image[:, :, 1] = rock_img * 255
+    # Thresh of navigable
+    Rover.vision_image[:, :, 2] = nav_img * 255
+
+    one_img = np.ones_like(img[:, :, 0])
+    warped_one = perspect_transform(one_img, src, dst)
+    # Thresh of obstacle
+    ob_img = np.zeros_like(img[:, :, 0])
+    ob_img[(warped_one == 1) & (nav_img == 0) & (rock_img == 0)] = 1
+
+    Rover.vision_image[:, :, 0] = ob_img * 255
     
     return Rover
