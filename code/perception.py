@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import math
 
 # Identify pixels above the threshold
 # Threshold of RGB > 160 does a nice job of identifying ground pixels only
@@ -138,10 +139,39 @@ def perception_step(Rover):
 
     one_img = np.ones_like(img[:, :, 0])
     warped_one = perspect_transform(one_img, src, dst)
-    # Thresh of obstacle
+    
     ob_img = np.zeros_like(img[:, :, 0])
     ob_img[(warped_one == 1) & (nav_img == 0) & (rock_img == 0)] = 1
-
+    # Thresh of obstacle
     Rover.vision_image[:, :, 0] = ob_img * 255
+
+    pitch = 360. - Rover.pitch if Rover.pitch > 180. else math.fabs(Rover.pitch)
+    roll = 360. - Rover.roll if Rover.roll > 180. else math.fabs(Rover.roll)
+
+    thresh_angle = 0.5
+
+    if pitch <= thresh_angle and roll <= thresh_angle:
+        # Map obstacles
+        xpix, ypix = rover_coords(ob_img)
+        xpix_world, ypix_world = pix_to_world(xpix, ypix, Rover.pos[0], Rover.pos[1], Rover.yaw, Rover.worldmap.shape[0], 10)
+        Rover.worldmap[ypix_world, xpix_world, 0] += 1
+        # Map navigable terrian
+        xpix, ypix = rover_coords(rock_img)
+        xpix_world, ypix_world = pix_to_world(xpix, ypix, Rover.pos[0], Rover.pos[1], Rover.yaw, Rover.worldmap.shape[0], 10)
+        Rover.worldmap[ypix_world, xpix_world, 1] += 1
+        # Map navigable terrian
+        xpix, ypix = rover_coords(nav_img)
+        xpix_world, ypix_world = pix_to_world(xpix, ypix, Rover.pos[0], Rover.pos[1], Rover.yaw, Rover.worldmap.shape[0], 10)
+        Rover.worldmap[ypix_world, xpix_world, 2] += 1
+
+        # Update nav attributes
+        Rover.nav_dists, Rover.nav_angles = to_polar_coords(xpix, ypix)
+
+    else:
+        xpix, ypix = rover_coords(nav_img)
+        xpix_world, ypix_world = pix_to_world(xpix, ypix, Rover.pos[0], Rover.pos[1], Rover.yaw, Rover.worldmap.shape[0], 10)
+
+        # Update nav attributes
+        Rover.nav_dists, Rover.nav_angles = to_polar_coords(xpix, ypix)
     
     return Rover

@@ -99,7 +99,7 @@ def telemetry(sid, data):
         fps = frame_counter
         frame_counter = 0
         second_counter = time.time()
-    print("Current FPS: {}".format(fps))
+    # print("Current FPS: {}".format(fps))
 
     if data:
         global Rover
@@ -129,6 +129,7 @@ def telemetry(sid, data):
             else:
                 # Send commands to the rover!
                 commands = (Rover.throttle, Rover.brake, Rover.steer)
+                commands = (0, 0, 0)
                 send_control(commands, out_image_string1, out_image_string2)
 
         # In case of invalid telemetry, send null commands

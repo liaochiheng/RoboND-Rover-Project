@@ -4,6 +4,7 @@ from PIL import Image
 from io import BytesIO, StringIO
 import base64
 import time
+import math
 
 # Define a function to convert telemetry strings to float independent of decimal convention
 def convert_to_float(string_to_convert):
@@ -50,6 +51,9 @@ def update_rover(Rover, data):
       # Update number of rocks collected
       Rover.samples_collected = Rover.samples_to_find - np.int(data["sample_count"])
 
+      pitch = 360. - Rover.pitch if Rover.pitch > 180. else math.fabs(Rover.pitch)
+      roll = 360. - Rover.roll if Rover.roll > 180. else math.fabs(Rover.roll)
+      print('vel = {:.4f}, pitch = {:.4f}, roll = {:.4f}'.format(Rover.vel, pitch, roll))
       # print('speed =',Rover.vel, 'position =', Rover.pos, 'throttle =', 
       # Rover.throttle, 'steer_angle =', Rover.steer, 'near_sample:', Rover.near_sample, 
       # 'picking_up:', data["picking_up"], 'sending pickup:', Rover.send_pickup, 
