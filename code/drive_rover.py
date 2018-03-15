@@ -61,7 +61,7 @@ class RoverState():
         # get creative in adding new fields or modifying these!
         self.stop_forward = 50 # Threshold to initiate stopping
         self.go_forward = 500 # Threshold to go forward again
-        self.max_vel = 2 # Maximum velocity (meters/second)
+        self.max_vel = 1 # 2 Maximum velocity (meters/second)
         # Image output from perception step
         # Update this image to display your intermediate analysis steps
         # on screen in autonomous mode
@@ -77,6 +77,10 @@ class RoverState():
         self.near_sample = 0 # Will be set to telemetry value data["near_sample"]
         self.picking_up = 0 # Will be set to telemetry value data["picking_up"]
         self.send_pickup = False # Set to True to trigger rock pickup
+
+        ### =============== My code here =============== ###
+        self.nav_left = None
+        ### =============== My code here =============== ###
 # Initialize our rover 
 Rover = RoverState()
 
@@ -129,7 +133,7 @@ def telemetry(sid, data):
             else:
                 # Send commands to the rover!
                 commands = (Rover.throttle, Rover.brake, Rover.steer)
-                commands = (0, 0, 0)
+                # commands = (0, 0, 0)
                 send_control(commands, out_image_string1, out_image_string2)
 
         # In case of invalid telemetry, send null commands

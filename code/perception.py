@@ -165,13 +165,21 @@ def perception_step(Rover):
         Rover.worldmap[ypix_world, xpix_world, 2] += 1
 
         # Update nav attributes
-        Rover.nav_dists, Rover.nav_angles = to_polar_coords(xpix, ypix)
+        # Rover.nav_dists, Rover.nav_angles = to_polar_coords(xpix, ypix)
+    # else:
+    #     xpix, ypix = rover_coords(nav_img)
+        
+    #     # Update nav attributes
+    #     Rover.nav_dists, Rover.nav_angles = to_polar_coords(xpix, ypix)
 
-    else:
-        xpix, ypix = rover_coords(nav_img)
-        xpix_world, ypix_world = pix_to_world(xpix, ypix, Rover.pos[0], Rover.pos[1], Rover.yaw, Rover.worldmap.shape[0], 10)
+    xpix, ypix = rover_coords(nav_img[110:, :])
+    Rover.nav_dists, Rover.nav_angles = to_polar_coords(xpix, ypix)
 
-        # Update nav attributes
-        Rover.nav_dists, Rover.nav_angles = to_polar_coords(xpix, ypix)
+    # if len( ags ) > 0:
+    #     Rover.nav_left = np.count_nonzero(ags > 0) / len(ags)
+    # else:
+    #     Rover.nav_left = -1
+
+    # Rover.nav_angles = ags
     
     return Rover

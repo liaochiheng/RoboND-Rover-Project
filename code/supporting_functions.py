@@ -53,7 +53,7 @@ def update_rover(Rover, data):
 
       pitch = 360. - Rover.pitch if Rover.pitch > 180. else math.fabs(Rover.pitch)
       roll = 360. - Rover.roll if Rover.roll > 180. else math.fabs(Rover.roll)
-      print('vel = {:.4f}, pitch = {:.4f}, roll = {:.4f}'.format(Rover.vel, pitch, roll))
+      # print('vel = {:.4f}, pitch = {:.4f}, roll = {:.4f}'.format(Rover.vel, pitch, roll))
       # print('speed =',Rover.vel, 'position =', Rover.pos, 'throttle =', 
       # Rover.throttle, 'steer_angle =', Rover.steer, 'near_sample:', Rover.near_sample, 
       # 'picking_up:', data["picking_up"], 'sending pickup:', Rover.send_pickup, 
