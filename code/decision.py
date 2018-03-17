@@ -148,15 +148,6 @@ def decision_step(Rover):
     
     return Rover
 
-def stop( Rover ):
-    # Set mode to "stop" and hit the brakes!
-    Rover.throttle = 0
-    # Set brake to stored brake value
-    Rover.brake = Rover.brake_set
-    Rover.steer = 0
-    Rover.mode = 'stop'
-    return Rover
-
 def update_steer( Rover ):
     # Put new steer into buff
     nav_left = np.count_nonzero( Rover.nav_angles > 0 )
