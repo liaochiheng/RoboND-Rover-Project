@@ -83,6 +83,8 @@ class RoverState():
         self.stuck_begin = None
         self.stuck = False
         self.stuck_yaw = None
+        self.rock_angle = None
+        self.rock_yaw = None
         ### =============== My code here =============== ###
 # Initialize our rover 
 Rover = RoverState()
@@ -136,7 +138,6 @@ def telemetry(sid, data):
             else:
                 # Send commands to the rover!
                 commands = (Rover.throttle, Rover.brake, Rover.steer)
-                # commands = (0, 0, 0)
                 send_control(commands, out_image_string1, out_image_string2)
 
         # In case of invalid telemetry, send null commands

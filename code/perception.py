@@ -157,29 +157,41 @@ def perception_step(Rover):
         Rover.worldmap[ypix_world, xpix_world, 0] += 1
         # Map navigable terrian
         xpix, ypix = rover_coords(rock_img)
+        rock_dists, rock_angles = to_polar_coords(xpix, ypix)
         xpix_world, ypix_world = pix_to_world(xpix, ypix, Rover.pos[0], Rover.pos[1], Rover.yaw, Rover.worldmap.shape[0], 10)
         Rover.worldmap[ypix_world, xpix_world, 1] += 1
+        
         # Map navigable terrian
         xpix, ypix = rover_coords(nav_img)
         xpix_world, ypix_world = pix_to_world(xpix, ypix, Rover.pos[0], Rover.pos[1], Rover.yaw, Rover.worldmap.shape[0], 10)
         Rover.worldmap[ypix_world, xpix_world, 2] += 1
 
-        # Update nav attributes
-        # Rover.nav_dists, Rover.nav_angles = to_polar_coords(xpix, ypix)
-    # else:
-    #     xpix, ypix = rover_coords(nav_img)
-        
-    #     # Update nav attributes
-    #     Rover.nav_dists, Rover.nav_angles = to_polar_coords(xpix, ypix)
+        # Find rock for pickup
+        if Rover.picking_up:
+            Rover.rock_angle = None
+            Rover.rock_yaw = None
 
-    xpix, ypix = rover_coords(nav_img[110:, :])
-    Rover.nav_dists, Rover.nav_angles = to_polar_coords(xpix, ypix)
+        xpix, ypix = rover_coords(nav_img[110:, :])
+        Rover.nav_dists, Rover.nav_angles = to_polar_coords(xpix, ypix)
 
-    # if len( ags ) > 0:
-    #     Rover.nav_left = np.count_nonzero(ags > 0) / len(ags)
-    # else:
-    #     Rover.nav_left = -1
+        if len( rock_angles ) > 10:
+            a = np.mean( rock_angles ) * 180 / np.pi
+            d = np.mean( rock_dists )
+            nav_ds, nav_as = to_polar_coords(xpix, ypix)
+            nav_as = nav_as * 180 / np.pi
+            # if ( a > 45 and d < 50 ) or ( a < 10 and d < 20 ):
+            
+            print( '===> rock: {:>4d}, dist = {:.1f}, angle = {:.1f}, count = {}'.format( \
+                len( rock_angles ), np.mean( rock_dists ), \
+                np.mean( rock_angles ) * 180 / np.pi, \
+                np.count_nonzero( np.fabs( nav_as - a ) < 10 ) ) )
 
-    # Rover.nav_angles = ags
+            if d < 80 and np.count_nonzero( np.fabs( nav_as - a ) < 10 ) > 50:
+                Rover.rock_angle = a
+                Rover.rock_yaw = ( Rover.yaw + a + 360 ) % 360
+
+    else:
+        xpix, ypix = rover_coords(nav_img[110:, :])
+        Rover.nav_dists, Rover.nav_angles = to_polar_coords(xpix, ypix)
     
     return Rover
