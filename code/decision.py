@@ -14,26 +14,8 @@ def decision_step(Rover):
     # Check if we have vision data to make decisions with
     if Rover.nav_angles is not None:
         # Check for Rover.mode status
-        if Rover.mode == 'start0': # TODO: Straight to one direction till wall
-            nav_left = np.count_nonzero( Rover.nav_angles > 0 )
-            nav_total = len( Rover.nav_angles )
-            rate = nav_left / nav_total # TODO: nav_total = 0
-            if rate > 0.35:
-                Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
-                if Rover.vel < Rover.max_vel:
-                    # Set throttle value to throttle setting
-                    Rover.throttle = Rover.throttle_set
-                else: # Else coast
-                    Rover.throttle = 0
-                Rover.brake = 0
-
-                print( '[Start] nav_left = {:.3f}, [{:4d} + {:4d} = {:4d}]. vel = {:.2f}'.format( rate, \
-                    nav_left, nav_total - nav_left, nav_total, Rover.vel ) )
-            else:
-                Rover.mode = 'forward'
-        elif Rover.mode == 'start': # Go straight till wall
+        if Rover.mode == 'start': # Go straight till wall
             if len(Rover.nav_angles) >= Rover.stop_forward:
-
                 if Rover.vel < Rover.max_vel:
                     # Set throttle value to throttle setting
                     Rover.throttle = Rover.throttle_set
@@ -41,17 +23,6 @@ def decision_step(Rover):
                     Rover.throttle = 0
                 Rover.brake = 0
                 Rover.steer = 0
-
-                # check_stuck( Rover )
-
-                # if Rover.stuck:
-                #     Rover.throttle = 0
-                #     Rover.brake = 0
-                #     Rover.steer = -15
-                #     Rover.stuck_yaw = ( Rover.yaw - 15 + 360 ) % 360
-                #     Rover.mode = 'stuck'
-                # else:
-                #     Rover.steer = 0 # Go straight
             else:
                 # Set mode to "stop" and hit the brakes!
                 Rover.throttle = 0

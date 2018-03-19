@@ -19,7 +19,7 @@ def color_thresh(img, rgb_thresh=(160, 160, 160)):
     return color_select
 
 # Threshold for rock: R > thresh_R & G > thresh_G & B < thresh_B
-def rock_thresh(img, rgb_thresh=(140, 110, 100)):
+def rock_thresh(img, rgb_thresh=(140, 110, 90)):
     # Create an array of zeros same xy size as img, but single channel
     color_select = np.zeros_like(img[:,:,0])
 
