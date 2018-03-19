@@ -129,7 +129,10 @@ def decision_step(Rover):
                 print( '[stuck_forward] Try to forward.' )
                 Rover.throttle = Rover.throttle_set
                 Rover.brake = 0
-                Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
+                if len( Rover.nav_angles ) >= Rover.go_forward:
+                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
+                else:
+                    Rover.steer = 0
             else:
                 print( '[stuck_forward] Get out of stuck.' )
                 Rover.throttle = Rover.throttle_set
