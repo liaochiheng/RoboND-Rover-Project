@@ -161,6 +161,7 @@ def decision_step(Rover):
             # print( '[rock_forward] angle = {:.2f}'.format( Rover.rock_angle ) )
             if Rover.picking_up:
                 Rover.rock_angle = None
+                Rover.rock_yaw = None
                 Rover.mode = 'stop'
             elif Rover.near_sample:
                 Rover.throttle = 0

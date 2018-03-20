@@ -24,7 +24,7 @@
 
 [rock_ob]: ./misc/rock_ob.jpg
 
-## [Rubric](https://review.udacity.com/#!/rubrics/916/view) Points
+## [Rubric Points](https://review.udacity.com/#!/rubrics/916/view)
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
 
 ---
@@ -103,9 +103,17 @@ Overall, Rover works like this:
 5. Check stuck in most of modes, and if stuck, turn right untill find a way to go.
 That's all.
 
-However, there are 3 problems left to be solved:
-1. Sometimes, Rover will stuck in `mode = stuck` while turning right, because it's blocked to turn right.
-2. In the middle area, with a few black rocks, Rover struggled to get out of stuck. It could get out in most of times, but still get stuck in few times.
-3. Since it always turning right on `mode = stop` or `mode = stuck`, Rover will turn back after picking up a rock on the right side of road. It will cost more time to finish the map. It's not sufficient.
+However, there are few problems left to be solved:
+1. Rover might turn circles if going straight to a black rock in the center of map in `mode = start`. I guess i could improve this by finding a wall to go straight or checking circles.
+2. Sometimes, Rover will stuck in `mode = stuck` while turning right, and it's blocked to turn right.
+3. In the middle area, with a few black rocks, Rover struggled to get out of stuck. It's capable to get out but could take a few seconds, not elegant.
+4. Since it always turning right on `mode = stop` or `mode = stuck`, Rover will turn back after picking up a rock on the right side of road. It will cost more time to finish the map. It's not sufficient.
+5. Since pickup is enabled when the navigable pixels are more than 50, sometimes there is a rock but navigable pixels are less than 50, it will miss. However probably the rock will still be picked up next time the Rover comeby.
 
+This is the vedio captured on autonomous mode.
+[Click here for the vedio](https://youtu.be/3Hxw661YDww)
+* Mapped: 98.3%
+* Fidely: 72.3%
+* Located Rocks: 6
+* Collected Rocks: 4 (for first run)
 

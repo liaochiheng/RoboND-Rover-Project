@@ -1,0 +1,5 @@
+# video files
+video/
+
+# python pyc
+*.pyc
