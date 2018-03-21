@@ -22,7 +22,7 @@
 
 [//]: # (Image References)
 
-[rock_ob]: ./misc/rock_ob.jpg
+[rock_ob]: ./misc/rock_ob.png
 
 ## [Rubric Points](https://review.udacity.com/#!/rubrics/916/view)
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -37,7 +37,7 @@ You're reading it!
 ### Notebook Analysis
 #### 1. Run the functions provided in the notebook on test images (first with the test data provided, next on data you have recorded). Add/modify functions to allow for color selection of obstacles and rock samples.
 * The code located under section "Thresh out the rocks and obstacles.".
-* Code #10 is for rock-thresh, which identify rocks by R > thresh_R & G > thresh_G & B < thresh_B
+* Code #10 is for rock-thresh, which identify rocks by R > 140 & G > 110 & B < 90
 * Code #11 if for obstacle-thresh, which is all the left except navigables and rocks based on warped-one-image.
 ```
 ob_threshed = np.zeros_like(rock_img[:, :, 0])
@@ -49,8 +49,21 @@ ob_threshed[(warped_one == 1) & (nav_threshed == 0) & (rock_threshed == 0)] = 1
 
 #### 2. Populate the `process_image()` function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and rock samples into a worldmap.  Run `process_image()` on your test data using the `moviepy` functions provided to create video output of your result. 
 * Code #14 is for process_image.
-* First, i calculated 3 binary images: nav_threshed, rock_threshed, and ob_threshed.
-* Then, i updated data.worldmap.
+* Create a `output_image` to hold all the outputs, with camera image up left, transformed image up right, and the worldmap down.
+* Use `rock_thresh` to get the rock threshed binary iamge, which is 1 with R > 140 & G > 110 & B < 90.
+* Use `color_thresh` to get the nav threshed binary image, which is 1 with R > 160 & G > 160 & B > 160.
+* To get the obstacles binary image, we need to do a calculation. (The above image shows how this works)
+  + Consider a all one binaray image `one_img = np.ones_like(img[:, :, 0])`.
+  + Then transform `warped_one = perspect_transform(one_img, source, destination)`.
+  + Here is the logic for obstacles threshed binary: pixels which are 1 in `warped_one` and 0 in `nav_threshed` and 0 in `rock_threshed` should be obstacles. `ob_threshed[(warped_one == 1) & (nav_threshed == 0) & (rock_threshed == 0)] = 1`
+* Now i got 3 binaries: `nav_threshed`, `rock_threshed`, and `ob_threshed`.
+* Then i need add them onto `data.worldmap`.
+* For each binary, do the same logic: (take ob_threshed as an example)
+  + Transform binary image to rover centric coords: `xpix, ypix = rover_coords(ob_threshed)`
+  + Transform rover centric coords to world coords: `xpix_world, ypix_world = pix_to_world(xpix, ypix, x, y, yaw, data.worldmap.shape[0], 10)`
+  + Add them onto worldmap with right layer(R, G, or B): `data.worldmap[ypix_world, xpix_world, 0] += 1`
+* After all the 3 binaries are done the above logic, the worldmap should be good.
+* Finally add up worldmap and the ground truth, and put it onto `output_image`.
 
 
 ### Autonomous Navigation and Mapping
